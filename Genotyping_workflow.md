@@ -76,21 +76,25 @@ cat Ids | \
    REMOVE_DUPLICATES=true \
    TMP_DIR=/datadisk0/gatktemp '
 ```
-We now prepare for indel realignment, the final step in 
+We now prepare for indel realignment, the final step in preprocessing of our genomic data.
+First we make a sequence dictionary
+```
 gatk CreateSequenceDictionary -R $genome
 mamba deactivate
+```
+
+Index our dedpuplicated reads:
+```
 mamba activate align
 cat Ids | \
   parallel --jobs 180  'samtools index align/{}.deDup.bam '
 
 mamba deactivate
+```
 
+And carry out the two steps of indel realignment
 
-wget https://storage.googleapis.com/gatk-software/package-archive/gatk/GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2 &&
-bzip2 -d GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2 &&
-tar -xvf GenomeAnalysisTK-3.7-0-gcfedb67.tar
-mamba create -n gatk37 openjdk=8
-
+```
 mamba activate gatk37
 
 cat Ids | parallel --tmpdir /datadisk0/gatktemp \
@@ -113,15 +117,19 @@ cat Ids | parallel --tmpdir /datadisk0/gatktemp \
   -targetIntervals align/{}.intervals \
   -o align/{}.realigned.bam '
 
-
-#
-
 mamba deactivate
+```
 
-#make a chromosome list containing chromosomes of interest
+# Genotype calling and genotype likelihoods
 
+This section assumes we have made a chromosome list containing chromosomes of interest. These can be obtained from the genome.fasta.fai file that was output by samtools faidx, or manually selected in a text editor. We also ened a list of our bam files that have been deduplicated and aligned
+
+```
 ls align/*real*bam > bamlist.tsv
+```
+We then reactivate our alignment environment that contains ANGSD, which we can use for genotyping. bcftools, freebayes, and GATK are also options - this pipeline uses ANGSD due to contingency. We had lcWGS data first, and so ANGSD was previously a big part of our toolset. 
 
+```
 mamba activate align
 ls
 
@@ -146,25 +154,17 @@ cat Chroms.tsv | parallel --jobs 25 ' angsd -nThreads 8 \
 -r {}: \
 -out angsd_out/{} \
 -bam bamlist.tsv '
+```
 
- #convert to vcf
+We can now take our output bcf files and convert to vcf
+```
 ls angsd_out/*bcf | sed 's/.bcf//' | parallel 'bcftools view {}.bcf -O z -o {}.vcf.gz '
+```
+And index them for any downstream analyses we are interested in
 
-#index
+```
 ls angsd_out/*bcf | sed 's/.bcf//' | parallel 'bcftools view {}.bcf -O z -o {}.vcf.gz '
 ls angsd_out/*vcf.gz | parallel ' tabix {} '
+```
+From here we can work directly with the variable-coverage samples, or we can do imputation.
 
-mamba deactivate
-
-#from here we can work directly with the variable-coverage samples, or we can do imputation.
-#start with PCA and depth analysis, then we'll impute and compare.
-
-mamba create -n beagleimpute openjdk
-
-##imputation for likelihoods in beagle 4.1
-cat Chroms.tsv | parallel --jobs 4 'java -Xmx400G \
-  -jar /datadisk0/software/beagle.27Jan18.7e1.jar \
-  gl=angsd_out/{}.vcf.gz \
-  out=imputegp/{} \
-  impute=false \
-  nthreads=40 '
