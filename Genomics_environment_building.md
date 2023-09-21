@@ -67,9 +67,4 @@ This version of GATK also needs its own, older version of java that we can insta
 ```
 mamba create -n gatk37 openjdk=8
 ```
-
-Additionally, we need a reference genome for our study species. We will work with the Atlantic Salmon genome:
-
-```
-curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v1/genome/accession/GCF_905237065.1/download?include_annotation_type=GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA&filename=GCF_905237065.1.zip" -H "Accept: application/zip"
-```
+We can now move on to a genotyping workflow that we've used in the past in HPC environments. 
