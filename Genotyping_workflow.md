@@ -61,8 +61,9 @@ while read ind;
   samtools sort -o align/$ind\.sorted.bam -T $ind -@ 100 -m 20G ;
   done < Ids
 ```
+Now we conduct deduplication using GATK
 
-
+```
 mamba activate gatk4
 mkdir /datadisk0/gatktemp
 
@@ -74,7 +75,7 @@ cat Ids | \
    O=align/{}.deDup.bam M=align/{}_deDupMetrics.txt \
    REMOVE_DUPLICATES=true \
    TMP_DIR=/datadisk0/gatktemp '
-
+```
 
 gatk CreateSequenceDictionary -R $genome
 mamba deactivate
