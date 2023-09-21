@@ -1,2 +1,2 @@
 # cloudgenomics
-Repo produced to demonstrate virtual machine setup for cloud genomics projects
+This repo demonstrates the basics of virtual machine setup for cloud genomics projects. The goal of this project was to explore porting the genotyping methods we use in [HPC environments](https://github.com/TonyKess/genotyping_hpc) to a virtual machine. Sections outline the [basics of virtual machine setup](https://github.com/TonyKess/cloudgenomics/blob/main/Software_and_setup.md), [building environments for genomic data analysis software](https://github.com/TonyKess/cloudgenomics/blob/main/Genomics_environment_building.md), and the steps used in the [genotyping pipeline](https://github.com/TonyKess/cloudgenomics/blob/main/Genotyping_workflow.md).
