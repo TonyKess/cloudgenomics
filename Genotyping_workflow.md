@@ -76,7 +76,7 @@ cat Ids | \
    REMOVE_DUPLICATES=true \
    TMP_DIR=/datadisk0/gatktemp '
 ```
-
+We now prepare for indel realignment, the final step in 
 gatk CreateSequenceDictionary -R $genome
 mamba deactivate
 mamba activate align
