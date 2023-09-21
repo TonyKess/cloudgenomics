@@ -59,9 +59,9 @@ Next we need different versions of software for genotyping and pre-genotyping pr
 ANGSD works with inputs from older versions of GATK, whereas we can directly carry out genotyping in the current version of GATK. To get the old verison (3.7), we do:
 
 ```
-wget https://storage.googleapis.com/gatk-software/package-archive/gatk/GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2
-bzip2 -d GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2
-tar -xvf
+wget https://storage.googleapis.com/gatk-software/package-archive/gatk/GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2 &&
+bzip2 -d GenomeAnalysisTK-3.7-0-gcfedb67.tar.bz2 &&
+tar -xvf GenomeAnalysisTK-3.7-0-gcfedb67.tar
 ```
 This version of GATK also needs its own, older version of java that we can install using conda. 
 ```
